@@ -4,6 +4,7 @@ import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/c
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '../lib/utils';
 import { MapPin, Calendar, Trash2 } from 'lucide-react';
+import { motion } from 'motion/react';
 
 // LeadBoard Component for Kanban View
 
@@ -44,13 +45,19 @@ export default function LeadBoard({ leads, onUpdate }: { leads: Lead[], onUpdate
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div className="flex h-full gap-4 overflow-x-auto pb-4">
-        {LEAD_STATUSES.map(status => (
-          <Column 
-            key={status.id} 
-            status={status} 
-            leads={leads.filter(l => l.status === status.id)} 
-            onDelete={handleDelete}
-          />
+        {LEAD_STATUSES.map((status, index) => (
+          <motion.div
+            key={status.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Column 
+              status={status} 
+              leads={leads.filter(l => l.status === status.id)} 
+              onDelete={handleDelete}
+            />
+          </motion.div>
         ))}
       </div>
     </DndContext>
