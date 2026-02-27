@@ -113,8 +113,10 @@ export default function CsvImporter({ onClose, onSuccess }: CsvImporterProps) {
                 let value = row[csvHeader as string];
                 
                 // Limpeza básica de dados
-                if (dbField === 'estimated_price' || dbField === 'bedrooms' || dbField === 'bathrooms' || dbField === 'sqft' || dbField === 'people_count') {
-                  value = value ? parseFloat(value.toString().replace(/[^0-9.]/g, '')) : 0;
+                if (['estimated_price', 'bedrooms', 'bathrooms', 'sqft', 'people_count'].includes(dbField)) {
+                  const cleanStr = value ? value.toString().replace(/[^0-9.]/g, '') : '';
+                  const num = parseFloat(cleanStr);
+                  value = isNaN(num) ? null : num;
                 }
                 
                 newRow[dbField] = value;
@@ -126,7 +128,10 @@ export default function CsvImporter({ onClose, onSuccess }: CsvImporterProps) {
             // Enviar lote para Supabase
             const { error } = await supabase.from('leads').insert(rowsToInsert);
 
-            if (error) throw error;
+            if (error) {
+              console.error('Supabase error:', error);
+              throw error;
+            }
 
             currentProcessed += batch.length;
             setProcessedCount(currentProcessed);
@@ -139,7 +144,9 @@ export default function CsvImporter({ onClose, onSuccess }: CsvImporterProps) {
           setStep('success');
           onSuccess();
         } catch (err: any) {
-          setError('Erro ao importar para o Supabase: ' + err.message);
+          console.error('Full import error:', err);
+          const errorMessage = err.message || err.details || err.hint || JSON.stringify(err);
+          setError('Erro ao importar para o Supabase: ' + errorMessage);
           setStep('map'); // Voltar para permitir tentar novamente
         }
       }
