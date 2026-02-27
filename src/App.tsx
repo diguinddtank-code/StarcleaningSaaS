@@ -199,6 +199,17 @@ export default function App() {
             <AnimatedButton 
               variant="ghost"
               size="sm"
+              onClick={fetchLeads}
+              icon={<Sparkles size={16} />}
+              className="hidden sm:inline-flex text-slate-600"
+              title="Atualizar lista"
+            >
+              Atualizar
+            </AnimatedButton>
+
+            <AnimatedButton 
+              variant="ghost"
+              size="sm"
               onClick={() => setShowImporter(true)}
               icon={<Upload size={16} />}
               className="hidden sm:inline-flex text-slate-600"

@@ -105,7 +105,7 @@ export default function CsvImporter({ onClose, onSuccess }: CsvImporterProps) {
             const rowsToInsert = batch.map((row: any) => {
               const newRow: any = {
                 status: 'new', // Status padrão
-                created_at: new Date().toISOString()
+                // created_at: new Date().toISOString() // REMOVED: Let Supabase handle this default
               };
               
               // Aplicar mapeamento
