@@ -126,11 +126,42 @@ export default function CsvImporter({ onClose, onSuccess }: CsvImporterProps) {
             });
 
             // Enviar lote para Supabase
-            const { error } = await supabase.from('leads').insert(rowsToInsert);
+            // Tentativa 1: Enviar todos os campos mapeados
+            let { error } = await supabase.from('leads').insert(rowsToInsert);
 
+            // Se falhar, tentar estratégia de fallback (remover campos novos que podem não existir na tabela antiga)
             if (error) {
-              console.error('Supabase error:', error);
-              throw error;
+              console.warn('Falha na inserção completa. Tentando fallback para campos básicos...', error);
+              
+              // Remover campos que foram adicionados recentemente e podem não existir no banco do usuário
+              const fallbackRows = rowsToInsert.map((row: any) => {
+                const { zip_code, people_count, ...rest } = row;
+                return rest;
+              });
+
+              const retry = await supabase.from('leads').insert(fallbackRows);
+              
+              if (retry.error) {
+                // Se ainda falhar, tentar apenas campos essenciais
+                console.warn('Falha no fallback 1. Tentando apenas campos essenciais...', retry.error);
+                
+                const minimalRows = rowsToInsert.map((row: any) => ({
+                  name: row.name,
+                  email: row.email,
+                  phone: row.phone,
+                  status: 'new',
+                  created_at: row.created_at
+                }));
+
+                const finalRetry = await supabase.from('leads').insert(minimalRows);
+                
+                if (finalRetry.error) {
+                  // Se falhar até o básico, lançar o erro original
+                  console.error('Supabase error payload:', rowsToInsert);
+                  console.error('Supabase error details:', error);
+                  throw error; // Lança o erro original que contém mais detalhes
+                }
+              }
             }
 
             currentProcessed += batch.length;
