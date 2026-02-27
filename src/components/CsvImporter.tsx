@@ -27,12 +27,12 @@ export default function CsvImporter({ onClose, onSuccess }: CsvImporterProps) {
     { key: 'email', label: 'Email', required: false },
     { key: 'phone', label: 'Telefone', required: false },
     { key: 'zip_code', label: 'Zip Code', required: false },
-    { key: 'type', label: 'Type (One-time/Recurring)', required: false },
+    { key: 'frequency', label: 'Frequência (Type)', required: false }, // Fixed: type -> frequency
     { key: 'bedrooms', label: 'Bedrooms', required: false },
     { key: 'bathrooms', label: 'Bathrooms', required: false },
     { key: 'sqft', label: 'Sqft', required: false },
     { key: 'people_count', label: 'Pessoas', required: false },
-    { key: 'service', label: 'Service', required: false },
+    { key: 'service_type', label: 'Service Type', required: false }, // Fixed: service -> service_type
     { key: 'estimated_price', label: 'Estimated Price', required: false },
     { key: 'city', label: 'Cidade', required: false },
   ];
@@ -62,12 +62,12 @@ export default function CsvImporter({ onClose, onSuccess }: CsvImporterProps) {
           else if (lowerHeader.includes('email')) initialMapping['email'] = header;
           else if (lowerHeader.includes('tele') || lowerHeader.includes('phone')) initialMapping['phone'] = header;
           else if (lowerHeader.includes('zip') || lowerHeader.includes('cep')) initialMapping['zip_code'] = header;
-          else if (lowerHeader.includes('type') || lowerHeader.includes('tipo')) initialMapping['type'] = header;
+          else if (lowerHeader.includes('type') || lowerHeader.includes('tipo')) initialMapping['frequency'] = header; // Fixed
           else if (lowerHeader.includes('bed') || lowerHeader.includes('quarto')) initialMapping['bedrooms'] = header;
           else if (lowerHeader.includes('bath') || lowerHeader.includes('banheiro')) initialMapping['bathrooms'] = header;
           else if (lowerHeader.includes('sqft') || lowerHeader.includes('area')) initialMapping['sqft'] = header;
           else if (lowerHeader.includes('pessoa') || lowerHeader.includes('people')) initialMapping['people_count'] = header;
-          else if (lowerHeader.includes('service') || lowerHeader.includes('serviço')) initialMapping['service'] = header;
+          else if (lowerHeader.includes('service') || lowerHeader.includes('serviço')) initialMapping['service_type'] = header; // Fixed
           else if (lowerHeader.includes('estim') || lowerHeader.includes('price') || lowerHeader.includes('preço')) initialMapping['estimated_price'] = header;
           else if (lowerHeader.includes('cidade') || lowerHeader.includes('city')) initialMapping['city'] = header;
         });
