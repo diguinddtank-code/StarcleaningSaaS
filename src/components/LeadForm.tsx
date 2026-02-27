@@ -66,9 +66,9 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
       if (error) throw error;
       
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating lead:', error);
-      alert('Failed to create lead. Please try again.');
+      alert(`Erro ao criar lead: ${error.message || JSON.stringify(error)}`);
     } finally {
       setLoading(false);
     }
