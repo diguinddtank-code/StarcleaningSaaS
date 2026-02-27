@@ -7,18 +7,19 @@ import { motion } from 'motion/react';
 
 export default function DashboardStats({ leads }: { leads: Lead[] }) {
   const totalLeads = leads.length;
-  const wonLeads = leads.filter(l => l.status === 'won').length;
+  // Normalize status check to be case-insensitive
+  const wonLeads = leads.filter(l => l.status?.toLowerCase() === 'won').length;
   const conversionRate = totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0;
   
   // Calculate potential value (all active leads)
   const pipelineValue = leads
-    .filter(l => ['new', 'contacted', 'quoted', 'scheduled'].includes(l.status))
-    .reduce((sum, l) => sum + (l.estimated_price || 0), 0);
+    .filter(l => ['new', 'contacted', 'quoted', 'scheduled'].includes(l.status?.toLowerCase() || ''))
+    .reduce((sum, l) => sum + (Number(l.estimated_price) || 0), 0);
 
   // Data for chart by status
   const statusData = LEAD_STATUSES.map(status => ({
     name: status.label,
-    count: leads.filter(l => l.status === status.id).length
+    count: leads.filter(l => (l.status?.toLowerCase() || 'new') === status.id).length
   }));
 
   const container = {
@@ -102,25 +103,26 @@ export default function DashboardStats({ leads }: { leads: Lead[] }) {
         >
           <h3 className="text-lg font-semibold text-slate-800 mb-4">Recent Activity</h3>
           <div className="space-y-4">
-            {leads.slice(0, 5).map((lead, index) => (
-              <motion.div 
-                key={lead.id} 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0 hover:bg-slate-50/50 rounded-lg px-2 -mx-2 transition-colors"
-              >
-                <div>
-                  <p className="font-medium text-slate-800">{lead.name}</p>
-                  <p className="text-xs text-slate-500">{lead.city} • {lead.service_type}</p>
-                </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  LEAD_STATUSES.find(s => s.id === lead.status)?.color
-                }`}>
-                  {LEAD_STATUSES.find(s => s.id === lead.status)?.label}
-                </span>
-              </motion.div>
-            ))}
+            {leads.slice(0, 5).map((lead, index) => {
+              const status = LEAD_STATUSES.find(s => s.id === (lead.status?.toLowerCase() || 'new')) || LEAD_STATUSES[0];
+              return (
+                <motion.div 
+                  key={lead.id} 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0 hover:bg-slate-50/50 rounded-lg px-2 -mx-2 transition-colors"
+                >
+                  <div>
+                    <p className="font-medium text-slate-800">{lead.name}</p>
+                    <p className="text-xs text-slate-500">{lead.city} • {lead.service_type}</p>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${status.color}`}>
+                    {status.label}
+                  </span>
+                </motion.div>
+              );
+            })}
             {leads.length === 0 && (
               <p className="text-slate-400 text-sm text-center py-4">No recent activity</p>
             )}
