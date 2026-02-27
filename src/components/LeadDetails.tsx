@@ -29,6 +29,8 @@ export default function LeadDetails({ lead, onClose, onUpdate }: LeadDetailsProp
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(false);
   const [showAddJob, setShowAddJob] = useState(false);
+  const [notes, setNotes] = useState(lead.notes || '');
+  const [savingNotes, setSavingNotes] = useState(false);
   
   // New Job Form State
   const [newJob, setNewJob] = useState({
@@ -62,6 +64,27 @@ export default function LeadDetails({ lead, onClose, onUpdate }: LeadDetailsProp
       setJobs([]); 
     } finally {
       setLoadingJobs(false);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    setSavingNotes(true);
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .update({ notes: notes })
+        .eq('id', lead.id);
+
+      if (error) throw error;
+      
+      // Update local state and notify parent
+      onUpdate();
+      alert('Nota salva com sucesso!');
+    } catch (error) {
+      console.error('Error saving notes:', error);
+      alert('Erro ao salvar nota.');
+    } finally {
+      setSavingNotes(false);
     }
   };
 
@@ -291,14 +314,22 @@ export default function LeadDetails({ lead, onClose, onUpdate }: LeadDetailsProp
             <div className="space-y-4">
               <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 text-yellow-800 text-sm">
                 <p className="font-medium mb-1">Notas do Lead</p>
-                <p>{lead.notes || "Nenhuma nota adicionada."}</p>
+                <p className="whitespace-pre-wrap">{lead.notes || "Nenhuma nota adicionada."}</p>
               </div>
               <textarea 
                 className="w-full border border-slate-200 rounded-xl p-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none min-h-[150px]"
                 placeholder="Adicionar nova nota..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
               <div className="flex justify-end">
-                <AnimatedButton icon={<Save size={16} />}>Salvar Nota</AnimatedButton>
+                <AnimatedButton 
+                  icon={<Save size={16} />} 
+                  onClick={handleSaveNotes}
+                  isLoading={savingNotes}
+                >
+                  Salvar Nota
+                </AnimatedButton>
               </div>
             </div>
           )}

@@ -5,6 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { cn } from '../lib/utils';
 import { MapPin, Calendar, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { supabase } from '../lib/supabase';
 
 // LeadBoard Component for Kanban View
 
@@ -19,25 +20,30 @@ export default function LeadBoard({ leads, onUpdate }: { leads: Lead[], onUpdate
       
       // Optimistic update could happen here, but we'll just call API
       try {
-        await fetch(`/api/leads/${leadId}/status`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: newStatus })
-        });
+        const { error } = await supabase
+          .from('leads')
+          .update({ status: newStatus })
+          .eq('id', leadId);
+
+        if (error) throw error;
+        
         onUpdate();
       } catch (error) {
         console.error('Failed to update status', error);
+        alert('Erro ao atualizar status. Tente novamente.');
       }
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm('Are you sure you want to delete this lead?')) {
+    if (confirm('Tem certeza que deseja excluir este lead?')) {
       try {
-        await fetch(`/api/leads/${id}`, { method: 'DELETE' });
+        const { error } = await supabase.from('leads').delete().eq('id', id);
+        if (error) throw error;
         onUpdate();
       } catch (error) {
         console.error('Failed to delete lead', error);
+        alert('Erro ao excluir lead.');
       }
     }
   };

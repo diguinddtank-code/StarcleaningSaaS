@@ -10,10 +10,11 @@ interface LiveLeadsFeedProps {
   onStatusChange: (id: number, newStatus: string) => void;
 }
 
-export default function LiveLeadsFeed({ leads, onStatusChange }: LiveLeadsFeedProps) {
+export default function LiveLeadsFeed({ leads = [], onStatusChange }: LiveLeadsFeedProps) {
   // Filter only new leads or leads that need attention
-  const newLeads = leads.filter(l => l.status === 'new');
-  const otherLeads = leads.filter(l => l.status !== 'new').slice(0, 5); // Show recent 5 others
+  const safeLeads = Array.isArray(leads) ? leads : [];
+  const newLeads = safeLeads.filter(l => (l.status?.toLowerCase() || 'new') === 'new');
+  const otherLeads = safeLeads.filter(l => (l.status?.toLowerCase() || 'new') !== 'new').slice(0, 5); // Show recent 5 others
 
   return (
     <div className="space-y-6">
