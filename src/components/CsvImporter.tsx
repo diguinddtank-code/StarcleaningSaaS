@@ -145,9 +145,17 @@ export default function CsvImporter({ onClose, onSuccess }: CsvImporterProps) {
           onSuccess();
         } catch (err: any) {
           console.error('Full import error:', err);
-          const errorMessage = err.message || err.details || err.hint || JSON.stringify(err);
-          setError('Erro ao importar para o Supabase: ' + errorMessage);
-          setStep('map'); // Voltar para permitir tentar novamente
+          let errorMessage = 'Erro desconhecido';
+          
+          if (err && typeof err === 'object') {
+             errorMessage = err.message || err.details || err.hint || JSON.stringify(err);
+             if (errorMessage === '{}') errorMessage = 'Erro de conexão. Verifique se a tabela "leads" existe no Supabase.';
+          } else {
+             errorMessage = String(err);
+          }
+
+          setError('Erro: ' + errorMessage);
+          setStep('map');
         }
       }
     });

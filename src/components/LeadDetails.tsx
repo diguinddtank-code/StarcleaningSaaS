@@ -155,6 +155,10 @@ export default function LeadDetails({ lead, onClose, onUpdate }: LeadDetailsProp
                       <span className="text-xs text-slate-500 uppercase tracking-wider">Banheiros</span>
                     </div>
                     <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center">
+                      <span className="block text-2xl font-bold text-slate-700">{lead.people_count || '-'}</span>
+                      <span className="text-xs text-slate-500 uppercase tracking-wider">Pessoas</span>
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center">
                       <span className="block text-2xl font-bold text-slate-700">{lead.sqft || '-'}</span>
                       <span className="text-xs text-slate-500 uppercase tracking-wider">Sq Ft</span>
                     </div>

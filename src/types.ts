@@ -4,13 +4,15 @@ export interface Lead {
   email: string;
   phone: string;
   address: string;
+  zip_code?: string; // Added field
   city: string;
-  service_type: 'standard' | 'deep' | 'move-in-out';
+  service_type: string; // Relaxed from union to allow CSV values
   bedrooms: number;
   bathrooms: number;
   sqft: number;
-  frequency: 'one-time' | 'weekly' | 'bi-weekly' | 'monthly';
-  status: 'new' | 'contacted' | 'quoted' | 'scheduled' | 'won' | 'lost';
+  people_count?: number; // Added field
+  frequency: string; // Relaxed from union
+  status: string; // Relaxed from union
   estimated_price: number;
   notes: string;
   source: string;
