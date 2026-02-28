@@ -127,9 +127,9 @@ const DraggableLeadCard: React.FC<{ lead: Lead, onDelete: () => void }> = ({ lea
 
       <div className="flex justify-between items-start mb-2 pr-6">
         <h4 className="font-medium text-slate-800 text-sm group-hover:text-indigo-600 transition-colors">{lead.name}</h4>
-        {lead.estimated_price && (
+        {lead.estimated_price1 && (
           <span className="text-xs font-medium text-green-700 bg-green-50 px-1.5 py-0.5 rounded">
-            ${lead.estimated_price}
+            {lead.estimated_price1}
           </span>
         )}
       </div>

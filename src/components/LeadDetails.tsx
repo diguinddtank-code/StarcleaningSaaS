@@ -37,7 +37,7 @@ export default function LeadDetails({ lead, onClose, onUpdate }: LeadDetailsProp
   const [newJob, setNewJob] = useState({
     date: new Date().toISOString().split('T')[0],
     team: '',
-    amount: lead.estimated_price || 0,
+    amount: 0,
     team_pay: 0,
     status: 'scheduled',
     notes: ''
@@ -221,7 +221,8 @@ export default function LeadDetails({ lead, onClose, onUpdate }: LeadDetailsProp
                 <Section title="Detalhes do Serviço">
                   <InfoRow icon={<CheckCircle size={16} />} label="Tipo" value={lead.service_type} />
                   <InfoRow icon={<Clock size={16} />} label="Frequência" value={lead.frequency} />
-                  <InfoRow icon={<DollarSign size={16} />} label="Orçamento" value={formatCurrency(lead.estimated_price || 0)} />
+                  <InfoRow icon={<DollarSign size={16} />} label="First Cleaning" value={lead.estimated_price1 || 'N/A'} />
+                  <InfoRow icon={<DollarSign size={16} />} label="Recurring" value={lead.estimated_price2 || 'N/A'} />
                 </Section>
               </div>
 
@@ -265,7 +266,7 @@ export default function LeadDetails({ lead, onClose, onUpdate }: LeadDetailsProp
                       className="w-full justify-start" 
                       icon={<FileText size={16} />}
                       onClick={() => {
-                        const text = `*Novo Serviço - StarCleaning*\n\n*Cliente:* ${lead.name}\n*Contato:* ${lead.phone || 'N/A'}\n*Endereço:* ${lead.address || 'N/A'}, ${lead.city || 'N/A'}\n*Serviço:* ${lead.service_type} (${lead.frequency})\n*Imóvel:* ${lead.bedrooms} quartos, ${lead.bathrooms} banheiros\n*Valor Estimado:* ${formatCurrency(lead.estimated_price || 0)}`;
+                        const text = `*Novo Serviço - StarCleaning*\n\n*Cliente:* ${lead.name}\n*Contato:* ${lead.phone || 'N/A'}\n*Endereço:* ${lead.address || 'N/A'}, ${lead.city || 'N/A'}\n*Serviço:* ${lead.service_type} (${lead.frequency})\n*Imóvel:* ${lead.bedrooms} quartos, ${lead.bathrooms} banheiros\n*First Cleaning:* ${lead.estimated_price1 || 'N/A'}\n*Recurring:* ${lead.estimated_price2 || 'N/A'}`;
                         navigator.clipboard.writeText(text);
                         alert('Informações copiadas para a área de transferência!');
                       }}

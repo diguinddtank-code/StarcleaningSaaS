@@ -11,10 +11,19 @@ export default function DashboardStats({ leads }: { leads: Lead[] }) {
   const wonLeads = leads.filter(l => l.status?.toLowerCase() === 'won').length;
   const conversionRate = totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0;
   
-  // Calculate potential value (all active leads)
+  // Helper to extract average price from a range string (e.g., "$100 - $150" -> 125)
+  const extractAveragePrice = (priceStr: string | undefined | null): number => {
+    if (!priceStr) return 0;
+    const numbers = priceStr.match(/\d+(\.\d+)?/g);
+    if (!numbers || numbers.length === 0) return 0;
+    const sum = numbers.reduce((acc, val) => acc + Number(val), 0);
+    return sum / numbers.length;
+  };
+
+  // Calculate potential value (all active leads) using First Cleaning (estimated_price1)
   const pipelineValue = leads
     .filter(l => ['new', 'contacted', 'quoted', 'scheduled'].includes(l.status?.toLowerCase() || ''))
-    .reduce((sum, l) => sum + (Number(l.estimated_price) || 0), 0);
+    .reduce((sum, l) => sum + extractAveragePrice(l.estimated_price1), 0);
 
   // Data for chart by status
   const statusData = LEAD_STATUSES.map(status => ({

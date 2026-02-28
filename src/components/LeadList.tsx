@@ -83,7 +83,7 @@ export default function LeadList({ leads, onLeadClick }: LeadListProps) {
                   </span>
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-right font-medium text-slate-900 whitespace-nowrap">
-                  {formatCurrency(lead.estimated_price || 0)}
+                  {lead.estimated_price1 || '-'}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-right">
                   <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">

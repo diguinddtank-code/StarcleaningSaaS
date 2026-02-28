@@ -20,9 +20,11 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
     sqft: 1000,
     frequency: 'one-time',
     notes: '',
-    source: 'manual'
+    source: 'manual',
+    estimated_price1: '',
+    estimated_price2: ''
   });
-  const [estimate, setEstimate] = useState<number | null>(null);
+  const [estimate, setEstimate] = useState<{first: number, recurring: number} | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -42,8 +44,14 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
       if (formData.service_type === 'deep') basePrice *= 1.5;
       if (formData.service_type === 'move-in-out') basePrice *= 2.0;
       
-      const calculated = Math.ceil(basePrice / 5) * 5;
-      setEstimate(calculated);
+      const calculatedFirst = Math.ceil(basePrice / 5) * 5;
+      const calculatedRecurring = Math.ceil((basePrice * 0.8) / 5) * 5;
+      setEstimate({ first: calculatedFirst, recurring: calculatedRecurring });
+      setFormData(prev => ({
+        ...prev,
+        estimated_price1: `$${calculatedFirst}`,
+        estimated_price2: `$${calculatedRecurring}`
+      }));
     } catch (error) {
       console.error('Estimate error', error);
     } finally {
@@ -57,7 +65,6 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
     try {
       const leadData = {
         ...formData,
-        estimated_price: estimate,
         status: 'new'
       };
 
@@ -259,6 +266,41 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
               </div>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">First Cleaning (Price)</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <DollarSign size={16} className="text-slate-400" />
+                  </div>
+                  <input 
+                    type="text" 
+                    name="estimated_price1"
+                    value={formData.estimated_price1}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    placeholder="e.g. $150 - $200"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">Recurring (Price)</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <DollarSign size={16} className="text-slate-400" />
+                  </div>
+                  <input 
+                    type="text" 
+                    name="estimated_price2"
+                    value={formData.estimated_price2}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    placeholder="e.g. $100 - $130"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2 mt-4">
               <label className="text-sm font-medium text-slate-700">Notas</label>
               <textarea 
@@ -280,7 +322,10 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
                   className="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between"
                 >
                   <span className="text-sm text-slate-600">Preço Sugerido:</span>
-                  <span className="text-2xl font-bold text-green-600">${estimate}</span>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-green-600">First: ${estimate.first}</div>
+                    <div className="text-lg font-bold text-indigo-600">Recurring: ${estimate.recurring}</div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

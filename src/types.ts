@@ -13,7 +13,8 @@ export interface Lead {
   people_count?: number;
   frequency: string;
   status: string;
-  estimated_price: number;
+  estimated_price1: string;
+  estimated_price2: string;
   notes: string;
   source: string;
   created_at: string;
