@@ -75,24 +75,24 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 sm:p-4 md:p-6">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col"
+        className="bg-white w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl shadow-2xl max-w-2xl overflow-hidden flex flex-col"
       >
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10 shrink-0">
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Novo Lead</h2>
-            <p className="text-sm text-slate-500">Adicionar manualmente ao pipeline</p>
+            <h2 className="text-lg sm:text-xl font-bold text-slate-800">Novo Lead</h2>
+            <p className="text-xs sm:text-sm text-slate-500">Adicionar manualmente ao pipeline</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-100 rounded-full transition-colors">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-100 rounded-full transition-colors shrink-0">
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-8 flex-1 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6 sm:space-y-8 flex-1 overflow-y-auto">
           
           {/* Section: Client Info */}
           <div className="space-y-4">
@@ -146,36 +146,36 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
               Detalhes do Imóvel
             </h3>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Quartos</label>
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Quartos</label>
                 <input
                   type="number"
                   min="0"
                   name="bedrooms"
-                  className="w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all"
+                  className="w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all text-sm"
                   value={formData.bedrooms}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Banheiros</label>
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Banheiros</label>
                 <input
                   type="number"
                   min="0"
                   name="bathrooms"
-                  className="w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all"
+                  className="w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all text-sm"
                   value={formData.bathrooms}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Área (sqft)</label>
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Área (sqft)</label>
                 <input
                   type="number"
                   min="0"
                   name="sqft"
-                  className="w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all"
+                  className="w-full rounded-xl border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all text-sm"
                   value={formData.sqft}
                   onChange={handleChange}
                 />
@@ -288,13 +288,14 @@ export default function LeadForm({ onClose, onSuccess }: { onClose: () => void, 
 
         </form>
 
-        <div className="p-6 border-t border-slate-100 flex justify-end gap-3 bg-white sticky bottom-0">
-          <AnimatedButton variant="ghost" onClick={onClose}>
+        <div className="p-4 sm:p-6 border-t border-slate-100 flex justify-end gap-3 bg-white sticky bottom-0 shrink-0">
+          <AnimatedButton variant="ghost" onClick={onClose} className="w-full sm:w-auto">
             Cancelar
           </AnimatedButton>
           <AnimatedButton 
             onClick={handleSubmit} 
             isLoading={loading}
+            className="w-full sm:w-auto"
           >
             Criar Lead
           </AnimatedButton>

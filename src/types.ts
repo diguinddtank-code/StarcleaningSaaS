@@ -4,15 +4,15 @@ export interface Lead {
   email: string;
   phone: string;
   address: string;
-  zip_code?: string; // Added field
+  zip_code?: string;
   city: string;
-  service_type: string; // Relaxed from union to allow CSV values
+  service_type: string;
   bedrooms: number;
   bathrooms: number;
   sqft: number;
-  people_count?: number; // Added field
-  frequency: string; // Relaxed from union
-  status: string; // Relaxed from union
+  people_count?: number;
+  frequency: string;
+  status: string;
   estimated_price: number;
   notes: string;
   source: string;
@@ -27,6 +27,18 @@ export interface Activity {
   type: 'note' | 'call' | 'email' | 'status_change';
   content: string;
   created_at: string;
+}
+
+export interface Job {
+  id: number;
+  lead_id: number;
+  date: string;
+  team: string;
+  amount: number;
+  team_pay?: number; // Amount paid to the team
+  status: 'scheduled' | 'completed' | 'cancelled';
+  notes: string;
+  created_at?: string;
 }
 
 export const LEAD_STATUSES = [

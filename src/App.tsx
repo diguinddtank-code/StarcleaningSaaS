@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Users, Calendar, Settings, Plus, Sparkles, Upload, Bell, Menu, X, List, Kanban } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, Settings, Plus, Sparkles, Upload, Bell, Menu, X, List, Kanban, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Lead } from './types';
 import { cn } from './lib/utils';
@@ -11,11 +11,13 @@ import DashboardStats from './components/DashboardStats';
 import LiveLeadsFeed from './components/LiveLeadsFeed';
 import CsvImporter from './components/CsvImporter';
 import AnimatedButton from './components/AnimatedButton';
+import ClientsList from './components/ClientsList';
+import FinancialReports from './components/FinancialReports';
+import SettingsView from './components/SettingsView';
 import { supabase } from './lib/supabase';
 
 export default function App() {
-  const [view, setView] = useState<'dashboard' | 'leads' | 'calendar'>('dashboard');
-  const [leadsViewMode, setLeadsViewMode] = useState<'board' | 'list'>('board');
+  const [view, setView] = useState<'dashboard' | 'leads_board' | 'leads_list' | 'clients' | 'finance' | 'calendar' | 'settings'>('dashboard');
   const [leads, setLeads] = useState<Lead[]>([]);
   const [showAddLead, setShowAddLead] = useState(false);
   const [showImporter, setShowImporter] = useState(false);
@@ -124,9 +126,13 @@ export default function App() {
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-indigo-600">
-            <Sparkles className="h-6 w-6" />
-            <span className="font-bold text-lg tracking-tight text-slate-900">StarCleaning</span>
+          <div className="flex items-center gap-2">
+            <img 
+              src="https://img1.wsimg.com/isteam/ip/97a5d835-7b16-4991-b3c6-3d6956b6b82b/ESBOC%CC%A7O-STAR-CLEANING_full.png/:/rs=w:143,h:75,cg:true,m/cr=w:143,h:75/qt=q:95" 
+              alt="StarCleaning Logo" 
+              className="h-10 object-contain" 
+              referrerPolicy="no-referrer" 
+            />
           </div>
           <button onClick={() => setMobileMenuOpen(false)} className="md:hidden text-slate-400">
             <X size={20} />
@@ -142,21 +148,44 @@ export default function App() {
             onClick={() => { setView('dashboard'); setMobileMenuOpen(false); }} 
           />
           <NavItem 
+            icon={<Kanban size={20} />} 
+            label="Pipeline (Kanban)" 
+            active={view === 'leads_board'} 
+            onClick={() => { setView('leads_board'); setMobileMenuOpen(false); }} 
+          />
+          <NavItem 
+            icon={<List size={20} />} 
+            label="Lista de Leads" 
+            active={view === 'leads_list'} 
+            onClick={() => { setView('leads_list'); setMobileMenuOpen(false); }} 
+          />
+          <NavItem 
             icon={<Users size={20} />} 
-            label="Leads Pipeline" 
-            active={view === 'leads'} 
-            onClick={() => { setView('leads'); setMobileMenuOpen(false); }} 
+            label="Meus Clientes" 
+            active={view === 'clients'} 
+            onClick={() => { setView('clients'); setMobileMenuOpen(false); }} 
+          />
+          <NavItem 
+            icon={<DollarSign size={20} />} 
+            label="Financeiro" 
+            active={view === 'finance'} 
+            onClick={() => { setView('finance'); setMobileMenuOpen(false); }} 
           />
           <NavItem 
             icon={<Calendar size={20} />} 
-            label="Schedule" 
+            label="Agenda" 
             active={view === 'calendar'} 
             onClick={() => { setView('calendar'); setMobileMenuOpen(false); }} 
           />
         </nav>
 
         <div className="p-4 border-t border-slate-100">
-          <NavItem icon={<Settings size={20} />} label="Settings" />
+          <NavItem 
+            icon={<Settings size={20} />} 
+            label="Configurações" 
+            active={view === 'settings'}
+            onClick={() => { setView('settings'); setMobileMenuOpen(false); }}
+          />
         </div>
       </aside>
 
@@ -181,30 +210,16 @@ export default function App() {
             </button>
             <h1 className="text-xl font-semibold text-slate-800">
               {view === 'dashboard' && 'Visão Geral'}
-              {view === 'leads' && 'Gestão de Leads'}
+              {view === 'leads_board' && 'Pipeline de Leads'}
+              {view === 'leads_list' && 'Lista de Leads'}
+              {view === 'clients' && 'Meus Clientes'}
+              {view === 'finance' && 'Relatórios Financeiros'}
               {view === 'calendar' && 'Agenda'}
+              {view === 'settings' && 'Configurações do Sistema'}
             </h1>
           </div>
           
           <div className="flex items-center gap-2 sm:gap-3">
-            {view === 'leads' && (
-              <div className="flex bg-slate-100 p-1 rounded-lg mr-2">
-                <button 
-                  onClick={() => setLeadsViewMode('board')}
-                  className={cn("p-1.5 rounded-md transition-all", leadsViewMode === 'board' ? "bg-white shadow-sm text-indigo-600" : "text-slate-500 hover:text-slate-700")}
-                  title="Kanban Board"
-                >
-                  <Kanban size={16} />
-                </button>
-                <button 
-                  onClick={() => setLeadsViewMode('list')}
-                  className={cn("p-1.5 rounded-md transition-all", leadsViewMode === 'list' ? "bg-white shadow-sm text-indigo-600" : "text-slate-500 hover:text-slate-700")}
-                  title="List View"
-                >
-                  <List size={16} />
-                </button>
-              </div>
-            )}
 
             <AnimatedButton 
               variant="ghost"
@@ -245,7 +260,7 @@ export default function App() {
         </header>
 
         {/* View Content */}
-        <div className="flex-1 overflow-auto p-4 sm:p-8 bg-slate-50/50">
+        <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-gradient-to-br from-slate-50 to-slate-100/80">
           {loading ? (
             <div className="flex items-center justify-center h-full text-slate-400">
               <div className="flex flex-col items-center gap-3">
@@ -269,12 +284,17 @@ export default function App() {
                     <LiveLeadsFeed leads={leads} onStatusChange={handleStatusChange} />
                   </div>
                 )}
-                {view === 'leads' && (
-                  leadsViewMode === 'board' ? (
-                    <LeadBoard leads={leads} onUpdate={fetchLeads} />
-                  ) : (
-                    <LeadList leads={leads} onLeadClick={setSelectedLead} />
-                  )
+                {view === 'leads_board' && (
+                  <LeadBoard leads={leads} onUpdate={fetchLeads} />
+                )}
+                {view === 'leads_list' && (
+                  <LeadList leads={leads} onLeadClick={setSelectedLead} />
+                )}
+                {view === 'clients' && (
+                  <ClientsList leads={leads} onClientClick={setSelectedLead} />
+                )}
+                {view === 'finance' && (
+                  <FinancialReports />
                 )}
                 {view === 'calendar' && (
                   <div className="flex flex-col items-center justify-center h-full bg-white rounded-2xl border border-slate-200 border-dashed text-slate-400 p-8 text-center">
@@ -284,6 +304,9 @@ export default function App() {
                     <h3 className="text-lg font-semibold text-slate-700">Agenda em Breve</h3>
                     <p className="max-w-xs mx-auto mt-2">Estamos trabalhando na integração com Google Calendar para agendamentos automáticos.</p>
                   </div>
+                )}
+                {view === 'settings' && (
+                  <SettingsView />
                 )}
               </motion.div>
             </AnimatePresence>

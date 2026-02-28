@@ -50,13 +50,14 @@ export default function LeadBoard({ leads, onUpdate }: { leads: Lead[], onUpdate
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div className="flex h-full gap-4 overflow-x-auto pb-4">
+      <div className="flex h-full gap-4 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar">
         {LEAD_STATUSES.map((status, index) => (
           <motion.div
             key={status.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
+            className="snap-center sm:snap-start h-full"
           >
             <Column 
               status={status} 
@@ -76,7 +77,7 @@ const Column: React.FC<{ status: typeof LEAD_STATUSES[number], leads: Lead[], on
   });
 
   return (
-    <div ref={setNodeRef} className="flex-shrink-0 w-80 bg-slate-100/50 rounded-xl flex flex-col h-full border border-slate-200/60">
+    <div ref={setNodeRef} className="flex-shrink-0 w-[85vw] sm:w-80 bg-slate-100/50 rounded-xl flex flex-col h-full border border-slate-200/60 shadow-sm">
       {/* ... header ... */}
       <div className="p-3 border-b border-slate-200/60 flex items-center justify-between sticky top-0 bg-slate-100/50 backdrop-blur-sm rounded-t-xl z-10">
         <div className="flex items-center gap-2">
