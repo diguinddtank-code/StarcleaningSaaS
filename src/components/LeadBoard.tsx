@@ -60,7 +60,7 @@ export default function LeadBoard({ leads, onUpdate }: { leads: Lead[], onUpdate
           >
             <Column 
               status={status} 
-              leads={leads.filter(l => l.status === status.id)} 
+              leads={leads.filter(l => (l.status?.toLowerCase() || 'new') === status.id)} 
               onDelete={handleDelete}
             />
           </motion.div>
@@ -147,7 +147,9 @@ const DraggableLeadCard: React.FC<{ lead: Lead, onDelete: () => void }> = ({ lea
       
       <div className="mt-3 pt-2 border-t border-slate-50 flex justify-between items-center">
         <span className="text-[10px] text-slate-400">
-          {new Date(lead.created_at).toLocaleDateString()}
+          {lead.created_at && !isNaN(new Date(lead.created_at).getTime()) 
+            ? new Date(lead.created_at).toLocaleDateString() 
+            : 'Sem data'}
         </span>
         <div className="h-5 w-5 rounded-full bg-slate-100 text-[10px] flex items-center justify-center text-slate-500 font-medium">
           {lead.name.charAt(0)}

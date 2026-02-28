@@ -65,11 +65,20 @@ export default function LiveLeadsFeed({ leads = [], onStatusChange }: LiveLeadsF
 }
 
 const LeadCard: React.FC<{ lead: Lead, onStatusChange: (id: number, s: string) => void, isNew: boolean }> = ({ lead, onStatusChange, isNew }) => {
-  const timeAgo = formatDistanceToNow(new Date(lead.created_at), { addSuffix: true, locale: ptBR });
-  
-  // Calculate if lead is "overdue" (e.g., more than 30 mins without contact)
-  const createdDate = new Date(lead.created_at);
-  const isOverdue = isNew && (new Date().getTime() - createdDate.getTime() > 30 * 60 * 1000);
+  let timeAgo = 'Recentemente';
+  let isOverdue = false;
+
+  try {
+    if (lead.created_at) {
+      const createdDate = new Date(lead.created_at);
+      if (!isNaN(createdDate.getTime())) {
+        timeAgo = formatDistanceToNow(createdDate, { addSuffix: true, locale: ptBR });
+        isOverdue = isNew && (new Date().getTime() - createdDate.getTime() > 30 * 60 * 1000);
+      }
+    }
+  } catch (e) {
+    console.warn('Invalid date for lead:', lead.id);
+  }
 
   return (
     <motion.div

@@ -45,9 +45,9 @@ export default function LeadList({ leads, onLeadClick }: LeadListProps) {
                 </td>
                 <td className="px-6 py-4">
                   <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
-                    LEAD_STATUSES.find(s => s.id === lead.status)?.color.replace('bg-', 'bg-opacity-10 text-').replace('text-', 'border-')
+                    (LEAD_STATUSES.find(s => s.id === (lead.status?.toLowerCase() || 'new')) || LEAD_STATUSES[0]).color.replace('bg-', 'bg-opacity-10 text-').replace('text-', 'border-')
                   }`}>
-                    {LEAD_STATUSES.find(s => s.id === lead.status)?.label}
+                    {(LEAD_STATUSES.find(s => s.id === (lead.status?.toLowerCase() || 'new')) || LEAD_STATUSES[0]).label}
                   </span>
                 </td>
                 <td className="px-6 py-4">

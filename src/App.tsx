@@ -26,21 +26,31 @@ export default function App() {
 
   const fetchLeads = async () => {
     // setLoading(true); // Don't set loading on refresh to avoid flicker
+    console.log('Fetching leads from Supabase...');
     try {
-      const { data, error } = await supabase
+      // Tenta buscar ordenado por created_at
+      let { data, error } = await supabase
         .from('leads')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data) {
+      // Se falhar (ex: coluna created_at não existe), tenta sem ordenação
+      if (error) {
+        console.warn('Erro ao buscar com ordenação, tentando sem...', error);
+        const retry = await supabase.from('leads').select('*');
+        data = retry.data;
+        error = retry.error;
+      }
+
+      if (error) {
+        console.error('Supabase error:', error);
+        // alert('Erro ao conectar com o banco de dados: ' + error.message);
+        return;
+      }
+
+      if (data) {
+        console.log(`Carregados ${data.length} leads do Supabase`);
         setLeads(data as any);
-      } else {
-        // Fallback for dev/demo
-        const res = await fetch('/api/leads');
-        const localData = await res.json();
-        if (localData && localData.length > 0) {
-            setLeads(localData);
-        }
       }
     } catch (error) {
       console.error('Failed to fetch leads', error);
